@@ -3477,7 +3477,7 @@ class MachineVersionLocationSerializer(serializers.HyperlinkedModelSerializer):
     item_id = ItemSummarySerializer()
     version_group_id = VersionGroupSummarySerializer()
     location_id = LocationSummarySerializer(many=True, read_only=True, source="location")
-    LocationAreaNameSerializer(many=True, read_only=True, source="locationareaname")
+    locationarea_id = LocationAreaNameSerializer(many=True, read_only=True, source="locationareaname")
 
     class Meta:
         model = MachineVersionLocation
