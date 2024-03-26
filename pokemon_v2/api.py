@@ -147,6 +147,10 @@ class EvolutionTriggerResource(PokeapiCommonViewset):
     serializer_class = EvolutionTriggerDetailSerializer
     list_serializer_class = EvolutionTriggerSummarySerializer
 
+#new Resource
+class MachineVersionLocationResource(PokeapiCommonViewset):
+  queryset = MachineVersionLocation.objets.all()
+  serializer_class=MachineVersionLocationSerializer
 
 class GenerationResource(PokeapiCommonViewset):
     queryset = Generation.objects.all()

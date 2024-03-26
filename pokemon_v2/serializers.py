@@ -2303,10 +2303,10 @@ class MoveDetailSerializer(serializers.ModelSerializer):
         details = None
 
         if (
-            normal_before_data
-            or normal_after_data
-            or super_before_data
-            or super_after_data
+                normal_before_data
+                or normal_after_data
+                or super_before_data
+                or super_after_data
         ):
             details = OrderedDict()
             details["normal"] = OrderedDict()
@@ -2803,10 +2803,10 @@ class PokemonDetailSerializer(serializers.ModelSerializer):
                 version_detail["level_learned_at"] = move["level"]
                 version_detail["version_group"] = version_data[
                     move["version_group"] - 1
-                ]
+                    ]
                 version_detail["move_learn_method"] = method_data[
                     move["move_learn_method"] - 1
-                ]
+                    ]
 
                 pokemon_move_details["version_group_details"].append(version_detail)
 
@@ -3466,3 +3466,19 @@ class VersionGroupDetailSerializer(serializers.ModelSerializer):
             results.append(dex_group["pokedex"])
 
         return results
+
+
+##################################################
+# NEW SERIALIZERS THAT COMP490 CAPSTONE HAS DONE #
+##################################################
+
+class MachineVersionLocationSerializer(serializers.HyperlinkedModelSerializer):
+    machine = MachineDetailSerializer()
+    item_id = ItemSummarySerializer()
+    version_group_id = VersionGroupSummarySerializer()
+    location_id = LocationSummarySerializer(many=True, read_only=True, source="location")
+    LocationAreaNameSerializer(many=True, read_only=True, source="locationareaname")
+
+    class Meta:
+        model = MachineVersionLocation
+        fields = ("machine","item_id","version_group_id","location_id", "locationarea_id","movename")
