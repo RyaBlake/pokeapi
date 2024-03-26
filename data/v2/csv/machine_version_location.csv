@@ -1,4 +1,4 @@
-﻿machine_number_id,",item_id",version_group_id,location_id,locationarea_id,move_name
+﻿machine_number_id,item_id,version_group_id,location_id,location_area_id,move_name
 1,305,1,80,291,mega-punch
 1,305,1,67,67,mega-punch
 1,305,2,80,291,mega-punch

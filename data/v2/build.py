@@ -1126,10 +1126,12 @@ def _build_experiences():
 def _build_machine_version_location():
     def csv_record_to_objects(info):
         yield MachineVersionLocation(
-            machine_ptr_id=int(info[0]),
-            name=info[1],
-            location_id=int(info[2]),
-            location_area_id=int(info[3])
+            machine_number_id=int(info[0]),
+            item_id=int(info[1]),
+            version_group_id=int(info[2]),
+            location_id=int(info[3]),
+            location_area_id=int(info[4]),
+            move_name=info[5]
         )
         build_generic((MachineVersionLocation,), "machine_version_location.csv", csv_record_to_objects)
         
@@ -2362,6 +2364,7 @@ def build_all():
     _build_natures()
     _build_genders()
     _build_experiences()
+    _build_machine_version_location()
     _build_machines()
     _build_evolutions()
     _build_pokedexes()
