@@ -1804,8 +1804,8 @@ class PokemonCries(HasPokemon):
 class MachineVersionLocation(HasLocation,HasLocationArea,Machine,HasName):
     machine_number_id = models.IntegerField()
 
-    version_group = models.ForeignKey(
+    version_group_id = models.ForeignKey(
         VersionGroup, blank=True, null=True, on_delete=models.CASCADE
     )
 
-    move = models.ForeignKey(Move, blank=True, null=True, on_delete=models.CASCADE)
+    move_id = models.ForeignKey(Move, blank=True, null=True, on_delete=models.CASCADE)
