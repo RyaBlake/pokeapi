@@ -1802,7 +1802,7 @@ class PokemonCries(HasPokemon):
     cries = models.JSONField()
 
 class MachineVersionLocation(HasLocation,HasLocationArea,Machine,HasName):
-    machine_number = models.IntegerField()
+    machine_number_id = models.IntegerField()
 
     version_group = models.ForeignKey(
         VersionGroup, blank=True, null=True, on_delete=models.CASCADE
