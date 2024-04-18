@@ -1827,3 +1827,12 @@ class PokemonSprites(HasPokemon):
 
 class PokemonCries(HasPokemon):
     cries = models.JSONField()
+
+
+
+class GymLeaders(HasPokemon, HasMove):
+    gym_leader_id = models.IntegerField()
+
+    gym_leader_name = models.CharField(max_length=10)
+
+    machine = CompositeForeignKey(Machine, null=False, to_fields={"machine_id", "version_group_id"}, on_delete=models.CASCADE)
