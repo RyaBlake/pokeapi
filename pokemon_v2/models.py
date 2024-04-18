@@ -1832,3 +1832,11 @@ class MachineVersionLocation(HasItem, HasLocation, HasLocationArea):
         VersionGroup, blank=True, null=True, on_delete=models.CASCADE
     )
     move_name = models.ForeignKey(MoveName, blank=True, null=True, on_delete=models.CASCADE)
+
+
+class GymLeaders(HasPokemon, HasMove):
+    gym_leader_id = models.IntegerField()
+
+    gym_leader_name = models.CharField(max_length=10)
+
+    machine = CompositeForeignKey(Machine, null=False, to_fields={"machine_id", "version_group_id"}, on_delete=models.CASCADE)
