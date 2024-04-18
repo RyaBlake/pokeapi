@@ -1830,7 +1830,7 @@ class PokemonCries(HasPokemon):
 
 
 
-class GymLeaders(HasPokemon, HasMove):
+class GymLeaders(HasPokemon, HasMove, HasVersionGroup):
     gym_leader_id = models.IntegerField()
 
     gym_leader_name = models.CharField(max_length=10)
