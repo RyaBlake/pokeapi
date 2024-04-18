@@ -2333,7 +2333,18 @@ def _build_encounters():
         csv_record_to_objects,
     )
 
-
+    def csv_record_to_objects(info):
+        yield TrophyGardenSpecialEncounters(
+            id=int(info[0]),
+            min_level=int(info[1]),
+            max_level=int(info[2]),
+            pokemon_id=int(info[3])
+        )
+    build_generic(
+        (TrophyGardenSpecialEncounters,),
+        "trophy_garden_special_encounters.csv",
+        csv_record_to_objects,
+    )
 ##############
 #  PAL PARK  #
 ##############
