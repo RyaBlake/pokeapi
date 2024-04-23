@@ -1835,4 +1835,4 @@ class GymLeaders(HasPokemon, HasMove, HasVersionGroup):
 
     gym_leader_name = models.CharField(max_length=10)
 
-    machine = CompositeForeignKey(Machine, null=False, to_fields={"gym_leader_id", "version_group_id"}, on_delete=models.CASCADE)
+    machine = CompositeForeignKey(Machine, null=False, to_fields={"id", "version_group_id"}, on_delete=models.CASCADE)
