@@ -2377,7 +2377,7 @@ def _build_pal_parks():
 def _build_gym_leaders():
     def csv_record_to_objects(info):
         yield GymLeaders(
-            id=int(info[0]),
+            gym_leader_id=int(info[0]),
             name=info[1],
             version_group_id=int(info[2]),
             pokemon_ace_id=int(info[3]),
