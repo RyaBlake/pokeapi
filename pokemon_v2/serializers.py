@@ -869,6 +869,14 @@ class EncounterDetailSerializer(serializers.ModelSerializer):
         return values
 
 
+class HoneyTreeSerializer(serializers.ModelSerializer):
+    pokemon = PokemonSummarySerializer()
+
+    class Meta:
+        model = HoneyTrees
+        fields = ("pokemon", "rarity")
+
+
 class LocationAreaEncounterRateSerializer(serializers.ModelSerializer):
     encounter_method = EncounterMethodSummarySerializer()
     version = VersionSummarySerializer()

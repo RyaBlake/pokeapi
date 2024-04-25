@@ -1173,6 +1173,13 @@ class APIData:
         return machine_version_location
 
     @classmethod
+    def setup_honey_tree_encounters_data(cls, pokemon=None, rarity="percentage"):
+        pokemon = pokemon or cls.setup_pokemon_data(name="pkmn for hny tr encntr")
+        tree = HoneyTrees.objects.create(pokemon=pokemon, rarity=rarity)
+        tree.save()
+        return tree
+
+    @classmethod
     def setup_pokeathlon_stat_data(cls, name="pkathln stt"):
         pokeathlon_stat = PokeathlonStat.objects.create(name=name)
         pokeathlon_stat.save()
@@ -5792,3 +5799,15 @@ class APITests(APIData, APITestCase):
                 response.data["locations"][i]["url"],
                 "{}{}/location/{}/".format(TEST_HOST, API_V2, many_locations[i].pk),
             )
+
+    def test_honey_tree_encounters(self):
+        pokemon = self.setup_pokemon_data()
+        tree = self.setup_honey_tree_encounters_data(pokemon)
+        response = self.client.get("{}/honey-trees/{}/".format(API_V2, tree.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["pokemon"]["name"], tree.pokemon.name)
+        self.assertEqual(
+            response.data["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, tree.pokemon.pk),
+        )
+        self.assertEqual(response.data["rarity"], tree.rarity)
