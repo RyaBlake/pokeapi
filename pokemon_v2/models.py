@@ -1839,4 +1839,4 @@ class GymLeaders(HasPokemon, HasMove, HasVersionGroup):
 
     name = models.CharField(max_length=10)
 
-    machine = models.IntegerField()
+    machine_id = models.IntegerField()
