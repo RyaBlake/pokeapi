@@ -136,8 +136,7 @@ class EncounterMethodResource(PokeapiCommonViewset):
     list_serializer_class = EncounterMethodSummarySerializer
 
 
-
-class TrophyGardenSpecialEncounter(PokeapiCommonViewset):
+class TrophyGardenSpecialEncounterResource(PokeapiCommonViewset):
     queryset = TrophyGardenSpecialEncounters.objects.all()
     serializer_class = TrophyGardenSpecialEncounterSerializer
 
