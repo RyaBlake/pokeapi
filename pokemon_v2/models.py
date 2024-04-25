@@ -1433,8 +1433,12 @@ class Machine(HasGrowthRate, HasItem):
 class MachineVersionLocation(HasLocation):
     machine_number = models.IntegerField()
     version_group_id = models.IntegerField()
-    machine = CompositeForeignKey(Machine, null=False, to_fields={"machine_number", "version_group_id"},
-                                  on_delete=models.CASCADE)  # type: ignore
+    machine = CompositeForeignKey(
+        Machine,
+        null=False,
+        to_fields={"machine_number", "version_group_id"},
+        on_delete=models.CASCADE,
+    )  # type: ignore
 
 
 #######################

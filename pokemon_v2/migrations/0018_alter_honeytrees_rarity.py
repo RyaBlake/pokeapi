@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pokemon_v2', '0017_honeytrees'),
+        ("pokemon_v2", "0017_honeytrees"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='honeytrees',
-            name='rarity',
+            model_name="honeytrees",
+            name="rarity",
             field=models.CharField(max_length=30),
         ),
     ]

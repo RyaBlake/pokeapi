@@ -2206,7 +2206,6 @@ def _build_pokemons():
     build_generic((PokemonTypePast,), "pokemon_types_past.csv", csv_record_to_objects)
 
 
-
 ###############
 #  ENCOUNTER  #
 ###############
