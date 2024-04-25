@@ -2364,7 +2364,7 @@ def _build_gym_leaders():
             name=info[1],
             version_group_id=int(info[2]),
             pokemon_id=int(info[3]),
-            machine=int(info[4]),
+            machine_num=int(info[4]),
             move_id=int(info[5])
         )
     build_generic((GymLeaders,), "gym_leaders.csv", csv_record_to_objects)
