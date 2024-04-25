@@ -1839,4 +1839,4 @@ class GymLeaders(HasPokemon, HasMove, HasVersionGroup):
 
     name = models.CharField(max_length=10)
 
-    machine = models.ForeignKey(Machine, blank=True, null=True, on_delete=models.CASCADE)
+    machine = models.IntegerField()
