@@ -1,6 +1,4 @@
 import json
-
-from django.core.files.uploadedfile import SimpleUploadedFile
 from rest_framework import status
 from rest_framework.test import APITestCase
 from pokemon_v2.models import *
