@@ -2380,7 +2380,7 @@ def _build_gym_leaders():
             gym_leader_id=int(info[0]),
             name=info[1],
             version_group_id=int(info[2]),
-            pokemon_ace_id=int(info[3]),
+            pokemon_id=int(info[3]),
             machine_id=int(info[4]),
             move_id=int(info[5])
         )
