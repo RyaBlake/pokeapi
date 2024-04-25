@@ -869,6 +869,12 @@ class EncounterDetailSerializer(serializers.ModelSerializer):
         return values
 
 
+class TrophyGardenSpecialEncounterSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TrophyGardenSpecialEncounters
+        fields = ("id", "min_level", "max_level", "pokemon_id")
+
+
 class LocationAreaEncounterRateSerializer(serializers.ModelSerializer):
     encounter_method = EncounterMethodSummarySerializer()
     version = VersionSummarySerializer()
