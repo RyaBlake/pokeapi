@@ -5611,7 +5611,7 @@ class APITests(APIData, APITestCase):
     def test_trophy_garden_special_encounters(self):
         pokemon = self.setup_pokemon_data()
         tree = self.trophy_garden_special_encounter_data(pokemon)
-        response = self.client.get("{}/Trophy_Garden_Special_Encounter/{}/".format(API_V2, tree.pk))
+        response = self.client.get("{}/Trophy_Garden_Special_Encounters/{}/".format(API_V2, tree.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
 
     # ID Range Tests
