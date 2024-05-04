@@ -1828,10 +1828,8 @@ class PokemonSprites(HasPokemon):
 class PokemonCries(HasPokemon):
     cries = models.JSONField()
 
-
-
-class GymLeaders(HasPokemon, HasMove, HasVersionGroup):
-    gym_leader_id = models.IntegerField()
+class Trainer(HasPokemon, HasMove, HasVersionGroup):
+    trainer_id = models.IntegerField()
 
     name = models.CharField(max_length=10)
 

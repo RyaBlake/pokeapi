@@ -2357,9 +2357,9 @@ def _build_pal_parks():
     build_generic((PalPark,), "pal_park.csv", csv_record_to_objects)
 
 
-def _build_gym_leaders():
+def _build_trainers():
     def csv_record_to_objects(info):
-        yield GymLeaders(
+        yield Trainer(
             gym_leader_id=int(info[0]),
             name=info[1],
             version_group_id=int(info[2]),
@@ -2367,7 +2367,7 @@ def _build_gym_leaders():
             machine_id=int(info[4]),
             move_id=int(info[5])
         )
-    build_generic((GymLeaders,), "gym_leaders.csv", csv_record_to_objects)
+    build_generic((Trainer,), "trainers.csv", csv_record_to_objects)
 
 
 def build_all():
@@ -2398,7 +2398,7 @@ def build_all():
     _build_encounters()
     _build_pal_parks()
     _build_honey_tree_encounters()
-    _build_gym_leaders()
+    _build_trainers()
 
 
 if __name__ == "__main__":
