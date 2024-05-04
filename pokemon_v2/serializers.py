@@ -870,7 +870,7 @@ class EncounterDetailSerializer(serializers.ModelSerializer):
 
 
 class TrophyGardenSpecialEncounterSerializer(serializers.ModelSerializer):
-    pokemon = PokemonSummarySerializer()
+    pokemon_id = PokemonSummarySerializer()
 
 
     class Meta:
