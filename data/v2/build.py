@@ -2335,7 +2335,6 @@ def _build_encounters():
 
     def csv_record_to_objects(info):
         yield TrophyGardenSpecialEncounters(
-            id=int(info[0]),
             min_level=int(info[1]),
             max_level=int(info[2]),
             pokemon_id=int(info[3])
