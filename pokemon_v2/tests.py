@@ -1164,8 +1164,6 @@ class APIData:
     def trophy_garden_special_encounter_data(cls, pokemon):
         pokemon = pokemon or cls.setup_pokemon_data(name="pkmn for trhy enctr")
         tree = TrophyGardenSpecialEncounters.objects.create(
-            min_level=min_level,
-            max_level=max_level,
             pokemon_id=pokemon
         )
         tree.save()
