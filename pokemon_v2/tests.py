@@ -1161,10 +1161,10 @@ class APIData:
         return characteristic_description
 
     @classmethod
-    def trophy_garden_special_encounter_data(cls, pokemon, min_level=0, max_level=100):
+    def trophy_garden_special_encounter_data(cls, pokemon=None, min_level=0, max_level=100):
         pokemon = pokemon or cls.setup_pokemon_data(name="pkmn for trhy enctr")
         tree = TrophyGardenSpecialEncounters.objects.create(
-            pokemon_id=pokemon,
+            pokemon=pokemon,
             min_level=min_level,
             max_level=max_level
         )
