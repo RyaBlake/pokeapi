@@ -1161,7 +1161,7 @@ class APIData:
         return characteristic_description
 
     @classmethod
-    def trophy_garden_special_encounter_data(cls, min_level,max_level, pokemon):
+    def trophy_garden_special_encounter_data(cls, pokemon):
         pokemon = pokemon or cls.setup_pokemon_data(name="pkmn for trhy enctr")
         tree = TrophyGardenSpecialEncounters.objects.create(
             min_level=min_level,
@@ -5607,7 +5607,6 @@ class APITests(APIData, APITestCase):
             response.data["pokemon_encounters"][0]["pokemon_species"]["url"],
             "{}{}/pokemon-species/{}/".format(TEST_HOST, API_V2, pokemon_species.pk),
         )
-
 
     def test_trophy_garden_special_encounters(self):
         pokemon = self.setup_pokemon_data()
