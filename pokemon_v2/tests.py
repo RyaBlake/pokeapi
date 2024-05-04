@@ -5613,7 +5613,8 @@ class APITests(APIData, APITestCase):
         tree = self.trophy_garden_special_encounter_data(pokemon)
         response = self.client.get("{}/Trophy_Garden_Special_Encounters/{}/".format(API_V2, tree.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-
+        self.assertEqual(response.data["pokemon"]["name"], tree.pokemon.name)
+        self.assertEqual(response.data["pokemon"]["url"], "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, tree.pokemon.pk))
     # ID Range Tests
     def test_id_range_api(self):
         response = self.client.get("{}/pokemon/{}/".format(API_V2, 2147483648))
