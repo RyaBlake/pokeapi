@@ -870,12 +870,12 @@ class EncounterDetailSerializer(serializers.ModelSerializer):
 
 
 class TrophyGardenSpecialEncounterSerializer(serializers.ModelSerializer):
-    pokemon_id = PokemonSummarySerializer()
+    pokemon = PokemonSummarySerializer()
 
 
     class Meta:
         model = TrophyGardenSpecialEncounters
-        fields = ("min_level", "max_level", "pokemon_id")
+        fields = ("min_level", "max_level", "pokemon")
 
 
 class LocationAreaEncounterRateSerializer(serializers.ModelSerializer):
