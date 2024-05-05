@@ -2357,34 +2357,70 @@ def _build_pal_parks():
     build_generic((PalPark,), "pal_park.csv", csv_record_to_objects)
 
 
+def _build_trainers():
+    def csv_record_to_objects(info):
+        yield Trainer(
+            name=info[1],
+            version_group_id=int(info[2]),
+            gym_leader=bool(int(info[3])),
+            reward_id=int(info[4]),
+        )
+
+    build_generic((Trainer,), "trainers.csv", csv_record_to_objects)
+
+    def csv_record_to_objects(info):
+        yield TrainerTeamMember(
+            trainer_id=int(info[1]),
+            pokemon_id=int(info[2]),
+            ability_id=int(info[3]) if info[3] != "" else None,
+            level=int(info[4]),
+            held_item_id=int(info[5]) if info[5] != "" else None,
+        )
+
+    build_generic(
+        (TrainerTeamMember,), "trainer_team_members.csv", csv_record_to_objects
+    )
+
+    def csv_record_to_objects(info):
+        yield TrainerTeamMemberMove(
+            team_member_id=int(info[1]),
+            move_id=int(info[2]),
+        )
+
+    build_generic(
+        (TrainerTeamMemberMove,), "trainer_team_member_moves.csv", csv_record_to_objects
+    )
+
+
 def build_all():
-    _build_languages()
-    _build_regions()
-    _build_generations()
-    _build_versions()
-    _build_damage_classes()
-    _build_stats()
-    _build_abilities()
-    _build_characteristics()
-    _build_egg_groups()
-    _build_growth_rates()
-    _build_items()
-    _build_types()
-    _build_contests()
-    _build_moves()
-    _build_berries()
-    _build_natures()
-    _build_genders()
-    _build_experiences()
-    _build_machines()
-    _build_evolutions()
-    _build_pokedexes()
-    _build_locations()
-    _build_machine_version_locations()
-    _build_pokemons()
-    _build_encounters()
-    _build_pal_parks()
-    _build_honey_tree_encounters()
+    # _build_languages()
+    # _build_regions()
+    # _build_generations()
+    # _build_versions()
+    # _build_damage_classes()
+    # _build_stats()
+    # _build_abilities()
+    # _build_characteristics()
+    # _build_egg_groups()
+    # _build_growth_rates()
+    # _build_items()
+    # _build_types()
+    # _build_contests()
+    # _build_moves()
+    # _build_berries()
+    # _build_natures()
+    # _build_genders()
+    # _build_experiences()
+    # _build_machines()
+    # _build_evolutions()
+    # _build_pokedexes()
+    # _build_locations()
+    # _build_machine_version_locations()
+    # _build_pokemons()
+    # _build_encounters()
+    # _build_pal_parks()
+    # _build_honey_tree_encounters()
+    _build_trainers()
 
 
 if __name__ == "__main__":

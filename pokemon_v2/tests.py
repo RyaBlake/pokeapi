@@ -1180,6 +1180,61 @@ class APIData:
         return tree
 
     @classmethod
+    def setup_trainer_data(
+            cls, name="trnr", version_group=None, gym_leader=True, reward=None
+    ):
+        version_group = version_group or cls.setup_version_group_data(
+            "ver grp for " + name
+        )
+
+        reward = reward or cls.setup_item_data(name="rwrd itm for " + name)
+
+        trainer = Trainer.objects.create(
+            name=name,
+            version_group=version_group,
+            gym_leader=gym_leader,
+            reward=reward,
+        )
+        trainer.save()
+
+        return trainer
+
+    @classmethod
+    def setup_trainer_team_member_data(
+            cls, trainer=None, pokemon=None, level=1, ability=None, held_item=None
+    ):
+        trainer = trainer or cls.setup_trainer_data()
+
+        pokemon = pokemon or cls.setup_pokemon_data(
+            name="pkmn tm mmbr for " + trainer.name
+        )
+
+        team_member = TrainerTeamMember.objects.create(
+            trainer=trainer,
+            pokemon=pokemon,
+            level=level,
+            ability=ability,
+            held_item=held_item,
+        )
+        team_member.save()
+
+        return team_member
+
+    @classmethod
+    def setup_trainer_team_member_move_data(cls, team_member=None, move=None):
+        team_member = team_member or cls.setup_trainer_team_member_data()
+
+        move = move or cls.setup_move_data(name="mv for " + team_member.pokemon.name)
+
+        team_member_move = TrainerTeamMemberMove.objects.create(
+            team_member=team_member, move=move
+        )
+        team_member_move.save()
+
+        return team_member_move
+
+
+    @classmethod
     def setup_pokeathlon_stat_data(cls, name="pkathln stt"):
         pokeathlon_stat = PokeathlonStat.objects.create(name=name)
         pokeathlon_stat.save()
@@ -5811,3 +5866,199 @@ class APITests(APIData, APITestCase):
             "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, tree.pokemon.pk),
         )
         self.assertEqual(response.data["rarity"], tree.rarity)
+
+    def test_trainer_api(self):
+        trainer = self.setup_trainer_data("base trnr")
+
+        base_pokemon = self.setup_pokemon_data(name="base pkmn tm mmbr for base trnr")
+        base_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer, pokemon=base_pokemon
+        )
+        base_team_member_move = self.setup_trainer_team_member_move_data(
+            base_team_member
+        )
+
+        ability_pokemon = self.setup_pokemon_data(
+            name="pkmn tm mmbr with ablty for base trnr"
+        )
+        only_ability = self.setup_ability_data(
+            "ablty for pkmn tm mmbr with ablty for base trnr"
+        )
+        ability_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer, pokemon=ability_pokemon, ability=only_ability
+        )
+        ability_team_member_move = self.setup_trainer_team_member_move_data(
+            ability_team_member
+        )
+
+        item_pokemon = self.setup_pokemon_data(
+            name="pkmn tm mmbr with hld itm for base trnr"
+        )
+        only_item = self.setup_item_data(
+            name="hld itm for pkmn tm mmbr with hld itm for base trnr"
+        )
+        item_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer, pokemon=item_pokemon, held_item=only_item
+        )
+        item_team_member_move = self.setup_trainer_team_member_move_data(
+            item_team_member
+        )
+
+        both_pokemon = self.setup_pokemon_data(
+            name="pkmn tm mmbr with ablty and hld itm for base trnr"
+        )
+        both_ability = self.setup_ability_data(
+            "ablty for pkmn tm mmbr with ablty and hld itm for base trnr"
+        )
+        both_item = self.setup_item_data(
+            name="hld itm for pkmn tm mmbr with ablty and hld itm for base trnr"
+        )
+        both_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer,
+            pokemon=both_pokemon,
+            ability=both_ability,
+            held_item=both_item,
+        )
+        both_team_member_move = self.setup_trainer_team_member_move_data(
+            both_team_member
+        )
+
+        response = self.client.get("{}/trainer/{}/".format(API_V2, trainer.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test base trainer properties
+        self.assertEqual(response.data["name"], trainer.name)
+
+        self.assertEqual(
+            response.data["version_group"]["name"], trainer.version_group.name
+        )
+        self.assertEqual(
+            response.data["version_group"]["url"],
+            "{}{}/version-group/{}/".format(
+                TEST_HOST, API_V2, trainer.version_group.pk
+            ),
+        )
+
+        self.assertEqual(response.data["gym_leader"], trainer.gym_leader)
+
+        self.assertEqual(response.data["reward"]["name"], trainer.reward.name)
+        self.assertEqual(
+            response.data["reward"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, trainer.reward.pk),
+        )
+
+        self.assertEqual(len(response.data["team"]), 4)
+
+        # Test team member without ability or held item
+        self.assertEqual(response.data["team"][0]["pokemon"]["name"], base_pokemon.name)
+        self.assertEqual(
+            response.data["team"][0]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, base_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][0]["level"], base_team_member.level)
+
+        self.assertEqual(len(response.data["team"][0]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][0]["moves"][0]["name"],
+            base_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][0]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, base_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][0]["ability"], base_team_member.ability)
+
+        self.assertEqual(
+            response.data["team"][0]["held_item"], base_team_member.held_item
+        )
+
+        # Test team member with only ability
+        self.assertEqual(
+            response.data["team"][1]["pokemon"]["name"], ability_pokemon.name
+        )
+        self.assertEqual(
+            response.data["team"][1]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, ability_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][1]["level"], ability_team_member.level)
+
+        self.assertEqual(len(response.data["team"][1]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][1]["moves"][0]["name"],
+            ability_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][1]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, ability_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][1]["ability"]["name"], only_ability.name)
+        self.assertEqual(
+            response.data["team"][1]["ability"]["url"],
+            "{}{}/ability/{}/".format(TEST_HOST, API_V2, only_ability.pk),
+        )
+
+        self.assertEqual(
+            response.data["team"][1]["held_item"], ability_team_member.held_item
+        )
+
+        # Test team member with only held item
+        self.assertEqual(response.data["team"][2]["pokemon"]["name"], item_pokemon.name)
+        self.assertEqual(
+            response.data["team"][2]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, item_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][2]["level"], item_team_member.level)
+
+        self.assertEqual(len(response.data["team"][2]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][2]["moves"][0]["name"],
+            item_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][2]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, item_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][2]["ability"], item_team_member.ability)
+
+        self.assertEqual(response.data["team"][2]["held_item"]["name"], only_item.name)
+        self.assertEqual(
+            response.data["team"][2]["held_item"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, only_item.pk),
+        )
+
+        # Test team member with both ability and held item
+        self.assertEqual(response.data["team"][3]["pokemon"]["name"], both_pokemon.name)
+        self.assertEqual(
+            response.data["team"][3]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, both_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][3]["level"], both_team_member.level)
+
+        self.assertEqual(len(response.data["team"][3]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][3]["moves"][0]["name"],
+            both_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][3]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, both_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][3]["ability"]["name"], both_ability.name)
+        self.assertEqual(
+            response.data["team"][3]["ability"]["url"],
+            "{}{}/ability/{}/".format(TEST_HOST, API_V2, both_ability.pk),
+        )
+
+        self.assertEqual(response.data["team"][3]["held_item"]["name"], both_item.name)
+        self.assertEqual(
+            response.data["team"][3]["held_item"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, both_item.pk),
+        )

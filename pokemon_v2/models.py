@@ -1827,3 +1827,25 @@ class PokemonSprites(HasPokemon):
 
 class PokemonCries(HasPokemon):
     cries = models.JSONField()
+
+
+class Trainer(HasName, HasVersionGroup):
+    gym_leader = models.BooleanField()
+
+    reward = models.ForeignKey(Item, blank=True, null=True, on_delete=models.CASCADE)
+
+
+class TrainerTeamMember(HasPokemon, HasAbility):
+    trainer = models.ForeignKey(
+        Trainer, blank=True, null=True, on_delete=models.CASCADE
+    )
+
+    level = models.IntegerField()
+
+    held_item = models.ForeignKey(Item, blank=True, null=True, on_delete=models.CASCADE)
+
+
+class TrainerTeamMemberMove(HasMove):
+    team_member = models.ForeignKey(
+        TrainerTeamMember, blank=True, null=True, on_delete=models.CASCADE
+    )
