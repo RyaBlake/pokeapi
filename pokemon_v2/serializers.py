@@ -3534,7 +3534,7 @@ class TrainerDetailSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Trainer
-        fields = ("name", "version_group", "team", "reward")
+        fields = ("name", "version_group", "gym_leader", "team", "reward")
 
     def get_team(self, obj):
         team_member_objects = TrainerTeamMember.objects.filter(trainer=obj)
