@@ -1,4 +1,5 @@
 from collections import OrderedDict
+from dataclasses import fields
 from django.urls import reverse
 from rest_framework import serializers
 
@@ -3491,6 +3492,53 @@ class PokedexDetailSerializer(serializers.ModelSerializer):
             results.append(dex_group["version_group"])
 
         return results
+
+
+#########################
+#  TRAINER SERIALIZERS  #
+#########################
+class TrainerTeamMemberSerializer(serializers.ModelSerializer):
+    pokemon = PokemonSummarySerializer()
+    moves = serializers.SerializerMethodField("get_team_member_moves")
+    ability = AbilitySummarySerializer()
+    held_item = ItemSummarySerializer()
+
+    class Meta:
+        model = TrainerTeamMember
+        fields = (
+            "pokemon",
+            "level",
+            "moves",
+            "ability",
+            "held_item",
+        )
+    
+    def get_team_member_moves(self, obj):
+        member_move_objects = TrainerTeamMemberMove.objects.filter(team_member=obj)
+
+        move_objects = map(lambda member_move: member_move.move, member_move_objects)
+
+        return MoveSummarySerializer(move_objects, many=True, context=self.context).data
+
+
+class TrainerSerializer(serializers.ModelSerializer):
+    version = VersionSummarySerializer()
+    team = serializers.SerializerMethodField()
+    reward = ItemSummarySerializer()
+    
+    class Meta:
+        model = Trainer
+        fields = (
+            "name",
+            "version",
+            "team",
+            "reward"
+        )
+    
+    def get_team(self, obj):
+        team_member_objects = TrainerTeamMember.objects.filter(trainer=obj)
+
+        return TrainerTeamMemberSerializer(team_member_objects, many=True, context=self.context).data
 
 
 #########################
