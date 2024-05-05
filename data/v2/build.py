@@ -2360,14 +2360,32 @@ def _build_pal_parks():
 def _build_trainers():
     def csv_record_to_objects(info):
         yield Trainer(
-            gym_leader_id=int(info[0]),
             name=info[1],
-            version_group_id=int(info[2]),
-            pokemon_id=int(info[3]),
-            machine_id=int(info[4]),
-            move_id=int(info[5])
+            version_id=int(info[2]),
+            gym_leader=bool(int(info[3])),
+            reward_id=int(info[4])
         )
+    
     build_generic((Trainer,), "trainers.csv", csv_record_to_objects)
+
+    def csv_record_to_objects(info):
+        yield TrainerTeamMember(
+            trainer_id=int(info[1]),
+            pokemon_id=int(info[2]),
+            ability_id=int(info[3]) if info[3] != "" else None,
+            level=int(info[4]),
+            held_item_id=int(info[5]) if info[5] != "" else None,
+        )
+    
+    build_generic((TrainerTeamMember,), "trainer_team_members.csv", csv_record_to_objects)
+
+    def csv_record_to_objects(info):
+        yield TrainerTeamMemberMove(
+            team_member_id=int(info[1]),
+            move_id=int(info[2]),
+        )
+    
+    build_generic((TrainerTeamMemberMove,), "trainer_team_member_moves.csv", csv_record_to_objects)
 
 
 def build_all():

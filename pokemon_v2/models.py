@@ -1840,7 +1840,7 @@ class Trainer(HasName, HasVersion):
 
 
 class TrainerTeamMember(HasPokemon, HasAbility):
-    trainer_id = models.ForeignKey(
+    trainer = models.ForeignKey(
         Trainer,
         blank=True,
         null=True,
