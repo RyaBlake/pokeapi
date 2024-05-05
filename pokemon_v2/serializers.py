@@ -3518,7 +3518,7 @@ class TrainerTeamMemberSerializer(serializers.ModelSerializer):
             "ability",
             "held_item",
         )
-    
+
     def get_team_member_moves(self, obj):
         member_move_objects = TrainerTeamMemberMove.objects.filter(team_member=obj)
 
@@ -3531,20 +3531,17 @@ class TrainerDetailSerializer(serializers.ModelSerializer):
     version_group = VersionGroupSummarySerializer()
     team = serializers.SerializerMethodField()
     reward = ItemSummarySerializer()
-    
+
     class Meta:
         model = Trainer
-        fields = (
-            "name",
-            "version_group",
-            "team",
-            "reward"
-        )
-    
+        fields = ("name", "version_group", "team", "reward")
+
     def get_team(self, obj):
         team_member_objects = TrainerTeamMember.objects.filter(trainer=obj)
 
-        return TrainerTeamMemberSerializer(team_member_objects, many=True, context=self.context).data
+        return TrainerTeamMemberSerializer(
+            team_member_objects, many=True, context=self.context
+        ).data
 
 
 #########################
