@@ -290,6 +290,12 @@ class SuperContestEffectSummarySerializer(serializers.HyperlinkedModelSerializer
         fields = ("url",)
 
 
+class TrainerSummarySerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Trainer
+        fields = ("name", "url")
+
+
 class TypeSummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Type
