@@ -3527,7 +3527,7 @@ class TrainerTeamMemberSerializer(serializers.ModelSerializer):
         return MoveSummarySerializer(move_objects, many=True, context=self.context).data
 
 
-class TrainerSerializer(serializers.ModelSerializer):
+class TrainerDetailSerializer(serializers.ModelSerializer):
     version = VersionSummarySerializer()
     team = serializers.SerializerMethodField()
     reward = ItemSummarySerializer()

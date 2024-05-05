@@ -345,6 +345,12 @@ class SuperContestEffectResource(PokeapiCommonViewset):
     list_serializer_class = SuperContestEffectSummarySerializer
 
 
+class TrainerResource(PokeapiCommonViewset):
+    queryset = Trainer.objects.all()
+    serializer_class = TrainerDetailSerializer
+    list_serializer_class = TrainerSummarySerializer
+
+
 class TypeResource(PokeapiCommonViewset):
     queryset = Type.objects.all()
     serializer_class = TypeDetailSerializer
