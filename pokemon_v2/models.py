@@ -1828,7 +1828,7 @@ class PokemonSprites(HasPokemon):
 class PokemonCries(HasPokemon):
     cries = models.JSONField()
 
-class Trainer(HasName, HasVersion):
+class Trainer(HasName, HasVersionGroup):
     gym_leader = models.BooleanField()
 
     reward = models.ForeignKey(

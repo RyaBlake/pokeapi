@@ -3528,7 +3528,7 @@ class TrainerTeamMemberSerializer(serializers.ModelSerializer):
 
 
 class TrainerDetailSerializer(serializers.ModelSerializer):
-    version = VersionSummarySerializer()
+    version_group = VersionGroupSummarySerializer()
     team = serializers.SerializerMethodField()
     reward = ItemSummarySerializer()
     
@@ -3536,7 +3536,7 @@ class TrainerDetailSerializer(serializers.ModelSerializer):
         model = Trainer
         fields = (
             "name",
-            "version",
+            "version_group",
             "team",
             "reward"
         )
