@@ -1180,6 +1180,34 @@ class APIData:
         return tree
 
     @classmethod
+    def setup_trainer_data(cls,trainer_id= None, name = "name for leader",version_group = None, gym_leader = None, reward_id = None):
+        version_group = version_group or cls.setup_version_data(version_group=version_group)
+        reward_id = reward_id or cls.setup_machine_data(machine_number=reward_id)
+        trainer = Trainer.objects.create(trainer_id=trainer_id, name=name, version_group_id=version_group,gym_leader=gym_leader,reward_id= reward_id)
+        trainer.save()
+        return trainer
+
+    @classmethod
+    def setup_trainer_team_data(cls, id = None, trainer_id = None, pokemon=None, ability = None, level = None, held_item = None):
+        trainer_id = trainer_id or cls.setup_trainer_data(trainer_id=trainer_id)
+        pokemon = pokemon or cls.setup_pokemon_data(name = "ace of trn")
+        ability = ability or cls.setup_ability_data(name="pkm ablty")
+        held_item = held_item or cls.setup_item_data(name="itm")
+        trainer_team = TrainerTeamMember.objects.create(id=id,trainer_id=trainer_id,pokemon=pokemon,ability=ability,level=level,held_item=held_item)
+        trainer_team.save()
+        return trainer_team
+
+    @classmethod
+    def setup_team_moves_data(cls,id=None, team_member_id=None,move_id=None):
+        team_member_id= team_member_id or cls.setup_trainer_team_data(name="ace pkmn")
+        move_id = move_id or cls.setup_move_data(name= "mv")
+        team_move = TrainerTeamMemberMove.objects.create(id=id,team_member_id=team_member_id,move_id=move_id)
+        team_move.save()
+        return team_move
+
+
+
+    @classmethod
     def setup_pokeathlon_stat_data(cls, name="pkathln stt"):
         pokeathlon_stat = PokeathlonStat.objects.create(name=name)
         pokeathlon_stat.save()
