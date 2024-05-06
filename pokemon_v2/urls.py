@@ -58,11 +58,14 @@ router.register(r"pokeathlon-stat", PokeathlonStatResource)
 router.register(r"region", RegionResource)
 router.register(r"stat", StatResource)
 router.register(r"super-contest-effect", SuperContestEffectResource)
+router.register(r"trainer", TrainerResource)
 router.register(r"type", TypeResource)
 router.register(r"version", VersionResource)
 router.register(r"version-group", VersionGroupResource)
-router.register(r"machine-version-locations", MachineVersionLocationResource)
-router.register(r"Trophy_Garden_Special_Encounters", TrophyGardenSpecialEncounterResource)
+router.register(r"honey-trees", HoneyTreeResource)
+router.register(
+    r"encounter-trophy-garden", TrophyGardenSpecialEncounterResource
+)
 
 ###########################
 #

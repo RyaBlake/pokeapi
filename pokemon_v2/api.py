@@ -152,10 +152,6 @@ class EvolutionTriggerResource(PokeapiCommonViewset):
     serializer_class = EvolutionTriggerDetailSerializer
     list_serializer_class = EvolutionTriggerSummarySerializer
 
-#new Resource
-class MachineVersionLocationResource(PokeapiCommonViewset):
-  queryset = MachineVersionLocation.objects.all()
-  serializer_class=MachineVersionLocationSerializer
 
 class GenerationResource(PokeapiCommonViewset):
     queryset = Generation.objects.all()
@@ -173,6 +169,11 @@ class GrowthRateResource(PokeapiCommonViewset):
     queryset = GrowthRate.objects.all()
     serializer_class = GrowthRateDetailSerializer
     list_serializer_class = GrowthRateSummarySerializer
+
+
+class HoneyTreeResource(PokeapiCommonViewset):
+    queryset = HoneyTrees.objects.all()
+    serializer_class = HoneyTreeSerializer
 
 
 class ItemResource(PokeapiCommonViewset):
@@ -347,6 +348,12 @@ class SuperContestEffectResource(PokeapiCommonViewset):
     queryset = SuperContestEffect.objects.all()
     serializer_class = SuperContestEffectDetailSerializer
     list_serializer_class = SuperContestEffectSummarySerializer
+
+
+class TrainerResource(PokeapiCommonViewset):
+    queryset = Trainer.objects.all()
+    serializer_class = TrainerDetailSerializer
+    list_serializer_class = TrainerSummarySerializer
 
 
 class TypeResource(PokeapiCommonViewset):
