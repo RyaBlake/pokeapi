@@ -4023,7 +4023,7 @@ class APITests(APIData, APITestCase):
         move_change = self.setup_move_change_data(move, power=10, pp=20, accuracy=30)
         move_effect_change = self.setup_move_effect_change_data(move_effect)
         move_effect_change_effect_text = self.setup_move_effect_change_effect_text_data(
-            move_effect_change=move_effect_change, effect="efct tx for mv efct chng"
+            move_effect_change=move_effect_change, effect="efct tx for mv efct  chng"
         )
         pokemon = self.setup_pokemon_data()
         version_group = self.setup_version_group_data()
@@ -4275,6 +4275,19 @@ class APITests(APIData, APITestCase):
         )
         # pokemon
         self.assertEqual(response.data["learned_by_pokemon"][0]["name"], pokemon.name)
+
+
+    def test_move_effect_api(self):
+        move_effect = self.setup_move_effect_data()
+        move_effect_effect_text = self.setup_move_effect_effect_text_data(move_effect)
+        move_effect_effect = move_effect_effect_text.effect
+        move_effect_short_effect = move_effect_effect_text.short_effect
+        move = self.setup_move_data(name="base mv", move_effect=move_effect)
+        move_change = self.setup_move_change_data(move, power=10, pp=20, accuracy=30)
+        move_effect_change = self.setup_move_change_data(move_effect)
+        move_effect_change_effect_text = self.setup_move_effect_change_effect_text_data\
+            (move_effect_change=move_effect_change, effect="efct tx for my efct chng")
+        language = self.setup_language_data(name="lang for " + move_effe
 
     # Stat Tests
     def test_stat_api(self):
