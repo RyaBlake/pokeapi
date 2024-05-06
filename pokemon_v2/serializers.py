@@ -884,6 +884,14 @@ class HoneyTreeSerializer(serializers.ModelSerializer):
         fields = ("pokemon", "rarity")
 
 
+class TrophyGardenSpecialEncounterSerializer(serializers.ModelSerializer):
+    pokemon = PokemonSummarySerializer()
+
+    class Meta:
+        model = TrophyGardenSpecialEncounters
+        fields = ("min_level", "max_level", "pokemon")
+
+
 class LocationAreaEncounterRateSerializer(serializers.ModelSerializer):
     encounter_method = EncounterMethodSummarySerializer()
     version = VersionSummarySerializer()
