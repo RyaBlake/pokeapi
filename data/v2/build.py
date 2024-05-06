@@ -2335,9 +2335,9 @@ def _build_encounters():
 
     def csv_record_to_objects(info):
         yield TrophyGardenSpecialEncounters(
-            min_level=int(info[1]),
-            max_level=int(info[2]),
-            pokemon_id=int(info[3])
+            min_level=int(info[0]),
+            max_level=int(info[1]),
+            pokemon_id=int(info[2])
         )
     build_generic(
         (TrophyGardenSpecialEncounters,),
