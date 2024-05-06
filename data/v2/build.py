@@ -1123,6 +1123,7 @@ def _build_experiences():
 #  MACHINES  #
 ##############
 
+
 def _build_machine_version_location():
     def csv_record_to_objects(info):
         yield MachineVersionLocation(
@@ -1131,10 +1132,15 @@ def _build_machine_version_location():
             version_group_id=int(info[2]),
             location_id=int(info[3]),
             location_area_id=int(info[4]),
-            move_name=info[5]
+            move_name=info[5],
         )
-        build_generic((MachineVersionLocation,), "machine_version_location.csv", csv_record_to_objects)
-        
+        build_generic(
+            (MachineVersionLocation,),
+            "machine_version_location.csv",
+            csv_record_to_objects,
+        )
+
+
 def _build_machines():
     def csv_record_to_objects(info):
         yield Machine(
@@ -2333,15 +2339,15 @@ def _build_encounters():
 
     def csv_record_to_objects(info):
         yield TrophyGardenSpecialEncounters(
-            min_level=int(info[0]),
-            max_level=int(info[1]),
-            pokemon_id=int(info[2])
+            min_level=int(info[0]), max_level=int(info[1]), pokemon_id=int(info[2])
         )
+
     build_generic(
         (TrophyGardenSpecialEncounters,),
         "trophy_garden_special_encounters.csv",
         csv_record_to_objects,
     )
+
 
 def _build_honey_tree_encounters():
     def csv_record_to_objects(info):

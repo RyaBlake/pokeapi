@@ -887,7 +887,6 @@ class HoneyTreeSerializer(serializers.ModelSerializer):
 class TrophyGardenSpecialEncounterSerializer(serializers.ModelSerializer):
     pokemon = PokemonSummarySerializer()
 
-
     class Meta:
         model = TrophyGardenSpecialEncounters
         fields = ("min_level", "max_level", "pokemon")
@@ -2341,10 +2340,10 @@ class MoveDetailSerializer(serializers.ModelSerializer):
         details = None
 
         if (
-                normal_before_data
-                or normal_after_data
-                or super_before_data
-                or super_after_data
+            normal_before_data
+            or normal_after_data
+            or super_before_data
+            or super_after_data
         ):
             details = OrderedDict()
             details["normal"] = OrderedDict()
@@ -3642,13 +3641,25 @@ class VersionGroupDetailSerializer(serializers.ModelSerializer):
 # NEW SERIALIZERS THAT COMP490 CAPSTONE HAS DONE #
 ##################################################
 
+
 class MachineVersionLocationSerializer(serializers.HyperlinkedModelSerializer):
     machine = MachineDetailSerializer()
     item_id = ItemSummarySerializer()
     version_group_id = VersionGroupSummarySerializer()
-    location_id = LocationSummarySerializer(many=True, read_only=True, source="location")
-    locationarea_id = LocationAreaNameSerializer(many=True, read_only=True, source="locationareaname")
+    location_id = LocationSummarySerializer(
+        many=True, read_only=True, source="location"
+    )
+    locationarea_id = LocationAreaNameSerializer(
+        many=True, read_only=True, source="locationareaname"
+    )
 
     class Meta:
         model = MachineVersionLocation
-        fields = ("machine","item_id","version_group_id","location_id", "locationarea_id","movename")
+        fields = (
+            "machine",
+            "item_id",
+            "version_group_id",
+            "location_id",
+            "locationarea_id",
+            "movename",
+        )
