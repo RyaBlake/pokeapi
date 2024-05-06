@@ -19,8 +19,7 @@ import json
 from typing import Any, Callable, Generator
 from django.db import connection
 from pokemon_v2.models import *
-from pokemon_v2.models import MachineVersionLocations
-
+from pokemon_v2.models import MachineVersionLocation
 
 # why this way? how about use `__file__`
 DATA_LOCATION = "data/v2/csv/"
@@ -30,7 +29,6 @@ SUB_RGX = r"\[.*?\]\{.*?\}"
 
 DB_CURSOR = connection.cursor()
 DB_VENDOR = connection.vendor
-
 
 MEDIA_DIR = "{prefix}{{file_name}}".format(
     prefix=os.environ.get(
@@ -1151,7 +1149,7 @@ def _build_machines():
 
 def _build_machine_version_locations():
     def csv_record_to_objects(info):
-        yield MachineVersionLocations(
+        yield MachineVersionLocation(
             machine_number=int(info[0]),
             version_group_id=int(info[1]),
             location_id=int(info[2]) if info[2] != "" else None,
@@ -1159,7 +1157,7 @@ def _build_machine_version_locations():
         )
 
     build_generic(
-        (MachineVersionLocations,),
+        (MachineVersionLocation,),
         "machine_version_locations.csv",
         csv_record_to_objects,
     )
@@ -2344,6 +2342,14 @@ def _build_encounters():
         "trophy_garden_special_encounters.csv",
         csv_record_to_objects,
     )
+
+def _build_honey_tree_encounters():
+    def csv_record_to_objects(info):
+        yield HoneyTrees(pokemon_id=int(info[0]), rarity=info[1])
+
+    build_generic((HoneyTrees,), "honey_tree.csv", csv_record_to_objects)
+
+
 ##############
 #  PAL PARK  #
 ##############
@@ -2373,17 +2379,39 @@ def _build_pal_parks():
     build_generic((PalPark,), "pal_park.csv", csv_record_to_objects)
 
 
-def _build_gym_leaders():
+def _build_trainers():
     def csv_record_to_objects(info):
-        yield GymLeaders(
-            gym_leader_id=int(info[0]),
+        yield Trainer(
             name=info[1],
             version_group_id=int(info[2]),
-            pokemon_id=int(info[3]),
-            machine_id=int(info[4]),
-            move_id=int(info[5])
+            gym_leader=bool(int(info[3])),
+            reward_id=int(info[4]),
         )
-    build_generic((GymLeaders,), "gym_leaders.csv", csv_record_to_objects)
+
+    build_generic((Trainer,), "trainers.csv", csv_record_to_objects)
+
+    def csv_record_to_objects(info):
+        yield TrainerTeamMember(
+            trainer_id=int(info[1]),
+            pokemon_id=int(info[2]),
+            ability_id=int(info[3]) if info[3] != "" else None,
+            level=int(info[4]),
+            held_item_id=int(info[5]) if info[5] != "" else None,
+        )
+
+    build_generic(
+        (TrainerTeamMember,), "trainer_team_members.csv", csv_record_to_objects
+    )
+
+    def csv_record_to_objects(info):
+        yield TrainerTeamMemberMove(
+            team_member_id=int(info[1]),
+            move_id=int(info[2]),
+        )
+
+    build_generic(
+        (TrainerTeamMemberMove,), "trainer_team_member_moves.csv", csv_record_to_objects
+    )
 
 
 def build_all():
@@ -2414,7 +2442,8 @@ def build_all():
     _build_pokemons()
     _build_encounters()
     _build_pal_parks()
-    _build_gym_leaders()
+    _build_honey_tree_encounters()
+    _build_trainers()
 
 
 if __name__ == "__main__":

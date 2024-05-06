@@ -175,6 +175,11 @@ class GrowthRateResource(PokeapiCommonViewset):
     list_serializer_class = GrowthRateSummarySerializer
 
 
+class HoneyTreeResource(PokeapiCommonViewset):
+    queryset = HoneyTrees.objects.all()
+    serializer_class = HoneyTreeSerializer
+
+
 class ItemResource(PokeapiCommonViewset):
     queryset = Item.objects.all()
     serializer_class = ItemDetailSerializer
@@ -347,6 +352,12 @@ class SuperContestEffectResource(PokeapiCommonViewset):
     queryset = SuperContestEffect.objects.all()
     serializer_class = SuperContestEffectDetailSerializer
     list_serializer_class = SuperContestEffectSummarySerializer
+
+
+class TrainerResource(PokeapiCommonViewset):
+    queryset = Trainer.objects.all()
+    serializer_class = TrainerDetailSerializer
+    list_serializer_class = TrainerSummarySerializer
 
 
 class TypeResource(PokeapiCommonViewset):

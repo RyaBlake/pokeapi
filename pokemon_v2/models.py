@@ -2,6 +2,7 @@ from django.db import models
 
 from compositefk.fields import CompositeForeignKey
 
+
 #####################
 #  ABSTRACT MODELS  #
 #####################
@@ -1180,6 +1181,10 @@ class EncounterConditionValueMap(models.Model):
     )
 
 
+class HoneyTrees(HasPokemon):
+    rarity = models.CharField(max_length=30)
+
+
 class TrophyGardenSpecialEncounters(HasPokemon):
 
     min_level = models.IntegerField()
@@ -1422,19 +1427,22 @@ class Machine(HasGrowthRate, HasItem):
     move = models.ForeignKey(Move, blank=True, null=True, on_delete=models.CASCADE)
 
     locations = models.ManyToManyField(
-        Location, through="MachineVersionLocations", blank=True
+        Location, through="MachineVersionLocation", blank=True
     )
-
-    # location_areas = models.ManyToManyField(LocationArea, through='MachineVersionLocations', blank=True)
 
     class Meta:
         unique_together = ("machine_number", "version_group")
 
 
-class MachineVersionLocations(HasLocation):
+class MachineVersionLocation(HasLocation):
     machine_number = models.IntegerField()
     version_group_id = models.IntegerField()
-    machine = CompositeForeignKey(Machine, null=False, to_fields={"machine_number", "version_group_id"}, on_delete=models.CASCADE)  # type: ignore
+    machine = CompositeForeignKey(
+        Machine,
+        null=False,
+        to_fields={"machine_number", "version_group_id"},
+        on_delete=models.CASCADE,
+    )  # type: ignore
 
 
 #######################
@@ -1825,18 +1833,23 @@ class PokemonCries(HasPokemon):
     cries = models.JSONField()
 
 
-class MachineVersionLocation(HasItem, HasLocation, HasLocationArea):
-    machine_number_id = models.IntegerField()
+class Trainer(HasName, HasVersionGroup):
+    gym_leader = models.BooleanField()
 
-    version_group = models.ForeignKey(
-        VersionGroup, blank=True, null=True, on_delete=models.CASCADE
+    reward = models.ForeignKey(Item, blank=True, null=True, on_delete=models.CASCADE)
+
+
+class TrainerTeamMember(HasPokemon, HasAbility):
+    trainer = models.ForeignKey(
+        Trainer, blank=True, null=True, on_delete=models.CASCADE
     )
-    move_name = models.ForeignKey(MoveName, blank=True, null=True, on_delete=models.CASCADE)
+
+    level = models.IntegerField()
+
+    held_item = models.ForeignKey(Item, blank=True, null=True, on_delete=models.CASCADE)
 
 
-class GymLeaders(HasPokemon, HasMove, HasVersionGroup):
-    gym_leader_id = models.IntegerField()
-
-    name = models.CharField(max_length=10)
-
-    machine_id = models.IntegerField()
+class TrainerTeamMemberMove(HasMove):
+    team_member = models.ForeignKey(
+        TrainerTeamMember, blank=True, null=True, on_delete=models.CASCADE
+    )

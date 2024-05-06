@@ -1120,6 +1120,121 @@ class APIData:
         return move_stat_change
 
     @classmethod
+    def setup_machine_data(
+        cls,
+        name="mchn",
+        machine_number=1,
+        version_group=None,
+        move=None,
+        growth_rate=None,
+        item=None,
+    ):
+        version_group = version_group or cls.setup_version_group_data(
+            "ver grp for " + name
+        )
+        move = move or cls.setup_move_data(
+            name="mv for " + name, generation=version_group.generation
+        )
+        growth_rate = growth_rate or cls.setup_growth_rate_data(
+            name="grth rt for " + name
+        )
+        item = item or cls.setup_item_data(
+            name="itm for " + name, fling_power=None  # type: ignore
+        )
+
+        machine = Machine.objects.create(
+            machine_number=machine_number,
+            version_group=version_group,
+            move=move,
+            growth_rate=growth_rate,
+            item=item,
+        )
+        machine.save()
+
+        return machine
+
+    @classmethod
+    def setup_machine_version_locations_data(
+        cls, name="mchn ver lctns", machine=None, location=None
+    ):
+        location = location or cls.setup_location_data(name="lctn for " + name)
+        machine = machine or cls.setup_machine_data(
+            name="mchn for " + name,
+            locations=[
+                location,
+            ],
+        )
+
+        machine_version_location = MachineVersionLocation(
+            machine=machine, location=location
+        )
+        machine_version_location.save()
+
+        return machine_version_location
+
+    @classmethod
+    def setup_honey_tree_encounters_data(cls, pokemon=None, rarity="percentage"):
+        pokemon = pokemon or cls.setup_pokemon_data(name="pkmn for hny tr encntr")
+        tree = HoneyTrees.objects.create(pokemon=pokemon, rarity=rarity)
+        tree.save()
+        return tree
+
+    @classmethod
+    def setup_trainer_data(
+            cls, name="trnr", version_group=None, gym_leader=True, reward=None
+    ):
+        version_group = version_group or cls.setup_version_group_data(
+            "ver grp for " + name
+        )
+
+        reward = reward or cls.setup_item_data(name="rwrd itm for " + name)
+
+        trainer = Trainer.objects.create(
+            name=name,
+            version_group=version_group,
+            gym_leader=gym_leader,
+            reward=reward,
+        )
+        trainer.save()
+
+        return trainer
+
+    @classmethod
+    def setup_trainer_team_member_data(
+            cls, trainer=None, pokemon=None, level=1, ability=None, held_item=None
+    ):
+        trainer = trainer or cls.setup_trainer_data()
+
+        pokemon = pokemon or cls.setup_pokemon_data(
+            name="pkmn tm mmbr for " + trainer.name
+        )
+
+        team_member = TrainerTeamMember.objects.create(
+            trainer=trainer,
+            pokemon=pokemon,
+            level=level,
+            ability=ability,
+            held_item=held_item,
+        )
+        team_member.save()
+
+        return team_member
+
+    @classmethod
+    def setup_trainer_team_member_move_data(cls, team_member=None, move=None):
+        team_member = team_member or cls.setup_trainer_team_member_data()
+
+        move = move or cls.setup_move_data(name="mv for " + team_member.pokemon.name)
+
+        team_member_move = TrainerTeamMemberMove.objects.create(
+            team_member=team_member, move=move
+        )
+        team_member_move.save()
+
+        return team_member_move
+
+
+    @classmethod
     def setup_pokeathlon_stat_data(cls, name="pkathln stt"):
         pokeathlon_stat = PokeathlonStat.objects.create(name=name)
         pokeathlon_stat.save()
@@ -4821,8 +4936,20 @@ class APITests(APIData, APITestCase):
         )
 
     def test_pokemon_api(self):
+        evolution_chain = self.setup_evolution_chain_data()
+        ancestor_pokemon_species = self.setup_pokemon_species_data(
+            name="ancstr pkmn spcs for pkmn spcs for base pkmn",
+            evolution_chain=evolution_chain,
+        )
         pokemon_species = self.setup_pokemon_species_data(
-            name="pkmn spcs for base pkmn"
+            name="pkmn spcs for base pkmn",
+            evolves_from_species=ancestor_pokemon_species,
+            evolution_chain=evolution_chain,
+        )
+        descendant_pokemon_species = self.setup_pokemon_species_data(
+            name="dscndt pkmn spcs for pkmn spcs for base pkmn",
+            evolves_from_species=pokemon_species,
+            evolution_chain=evolution_chain,
         )
         pokemon = self.setup_pokemon_data(
             pokemon_species=pokemon_species, name="base pkm"
@@ -4907,6 +5034,46 @@ class APITests(APIData, APITestCase):
         self.assertEqual(
             response.data["species"]["url"],
             "{}{}/pokemon-species/{}/".format(TEST_HOST, API_V2, pokemon_species.pk),
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["url"],
+            "{}{}/evolution-chain/{}/".format(TEST_HOST, API_V2, evolution_chain.pk),
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["chain"]["species"]["name"],
+            ancestor_pokemon_species.name,
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["chain"]["species"]["url"],
+            "{}{}/pokemon-species/{}/".format(
+                TEST_HOST, API_V2, ancestor_pokemon_species.pk
+            ),
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["chain"]["evolves_to"][0][
+                "species"
+            ]["name"],
+            pokemon_species.name,
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["chain"]["evolves_to"][0][
+                "species"
+            ]["url"],
+            "{}{}/pokemon-species/{}/".format(TEST_HOST, API_V2, pokemon_species.pk),
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["chain"]["evolves_to"][0][
+                "evolves_to"
+            ][0]["species"]["name"],
+            descendant_pokemon_species.name,
+        )
+        self.assertEqual(
+            response.data["species"]["evolution_chain"]["chain"]["evolves_to"][0][
+                "evolves_to"
+            ][0]["species"]["url"],
+            "{}{}/pokemon-species/{}/".format(
+                TEST_HOST, API_V2, descendant_pokemon_species.pk
+            ),
         )
         # abilities params
         self.assertEqual(
@@ -5620,3 +5787,295 @@ class APITests(APIData, APITestCase):
         response = self.client.get("{}/pokemon/{}/".format(API_V2, 2147483648))
 
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+    # Machine Tests
+    def test_machine_api(self):
+        # Setup machine with no locations
+        base_machine = self.setup_machine_data(name="base mchn")
+
+        response = self.client.get("{}/machine/{}/".format(API_V2, base_machine.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data["id"], base_machine.pk)
+
+        self.assertEqual(response.data["item"]["name"], base_machine.item.name)
+        self.assertEqual(
+            response.data["item"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, base_machine.item.pk),
+        )
+
+        self.assertEqual(
+            response.data["version_group"]["name"], base_machine.version_group.name
+        )
+        self.assertEqual(
+            response.data["version_group"]["url"],
+            "{}{}/version-group/{}/".format(
+                TEST_HOST, API_V2, base_machine.version_group.pk
+            ),
+        )
+
+        self.assertEqual(response.data["move"]["name"], base_machine.move.name)
+        self.assertEqual(
+            response.data["move"]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, base_machine.move.pk),
+        )
+
+        self.assertListEqual(response.data["locations"], [])
+
+        # Test machine with single location
+        single_location = self.setup_location_data(name="lctn for mchn with 1 lctn")
+        machine_with_single_location = self.setup_machine_data(name="mchn with 1 lctn")
+        single_machine_ver_loc = self.setup_machine_version_locations_data(
+            machine=machine_with_single_location, location=single_location
+        )
+
+        response = self.client.get(
+            "{}/machine/{}/".format(API_V2, machine_with_single_location.pk)
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data["id"], machine_with_single_location.pk)
+        self.assertEqual(len(response.data["locations"]), 1)
+
+        self.assertEqual(response.data["locations"][0]["name"], single_location.name)
+        self.assertEqual(
+            response.data["locations"][0]["url"],
+            "{}{}/location/{}/".format(TEST_HOST, API_V2, single_location.pk),
+        )
+
+        # Test Machine with multiple locations
+        machine_with_many_locations = self.setup_machine_data(name="mchn with 10 lcts")
+        many_locations = [
+            self.setup_location_data(name=f"lctn {i} for mchn with 10 lctns")
+            for i in range(1, 11)
+        ]
+        many_machine_ver_locs = [
+            self.setup_machine_version_locations_data(
+                machine=machine_with_many_locations, location=location
+            )
+            for location in many_locations
+        ]
+
+        response = self.client.get(
+            "{}/machine/{}/".format(API_V2, machine_with_many_locations.pk)
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(len(response.data["locations"]), len(many_locations))
+
+        for i in range(0, len(many_locations)):
+            self.assertEqual(
+                response.data["locations"][i]["name"], many_locations[i].name
+            )
+            self.assertEqual(
+                response.data["locations"][i]["url"],
+                "{}{}/location/{}/".format(TEST_HOST, API_V2, many_locations[i].pk),
+            )
+
+    def test_honey_tree_encounters(self):
+        pokemon = self.setup_pokemon_data()
+        tree = self.setup_honey_tree_encounters_data(pokemon)
+        response = self.client.get("{}/honey-trees/{}/".format(API_V2, tree.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["pokemon"]["name"], tree.pokemon.name)
+        self.assertEqual(
+            response.data["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, tree.pokemon.pk),
+        )
+        self.assertEqual(response.data["rarity"], tree.rarity)
+
+    def test_trainer_api(self):
+        trainer = self.setup_trainer_data("base trnr")
+
+        base_pokemon = self.setup_pokemon_data(name="base pkmn tm mmbr for base trnr")
+        base_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer, pokemon=base_pokemon
+        )
+        base_team_member_move = self.setup_trainer_team_member_move_data(
+            base_team_member
+        )
+
+        ability_pokemon = self.setup_pokemon_data(
+            name="pkmn tm mmbr with ablty for base trnr"
+        )
+        only_ability = self.setup_ability_data(
+            "ablty for pkmn tm mmbr with ablty for base trnr"
+        )
+        ability_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer, pokemon=ability_pokemon, ability=only_ability
+        )
+        ability_team_member_move = self.setup_trainer_team_member_move_data(
+            ability_team_member
+        )
+
+        item_pokemon = self.setup_pokemon_data(
+            name="pkmn tm mmbr with hld itm for base trnr"
+        )
+        only_item = self.setup_item_data(
+            name="hld itm for pkmn tm mmbr with hld itm for base trnr"
+        )
+        item_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer, pokemon=item_pokemon, held_item=only_item
+        )
+        item_team_member_move = self.setup_trainer_team_member_move_data(
+            item_team_member
+        )
+
+        both_pokemon = self.setup_pokemon_data(
+            name="pkmn tm mmbr with ablty and hld itm for base trnr"
+        )
+        both_ability = self.setup_ability_data(
+            "ablty for pkmn tm mmbr with ablty and hld itm for base trnr"
+        )
+        both_item = self.setup_item_data(
+            name="hld itm for pkmn tm mmbr with ablty and hld itm for base trnr"
+        )
+        both_team_member = self.setup_trainer_team_member_data(
+            trainer=trainer,
+            pokemon=both_pokemon,
+            ability=both_ability,
+            held_item=both_item,
+        )
+        both_team_member_move = self.setup_trainer_team_member_move_data(
+            both_team_member
+        )
+
+        response = self.client.get("{}/trainer/{}/".format(API_V2, trainer.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        # Test base trainer properties
+        self.assertEqual(response.data["name"], trainer.name)
+
+        self.assertEqual(
+            response.data["version_group"]["name"], trainer.version_group.name
+        )
+        self.assertEqual(
+            response.data["version_group"]["url"],
+            "{}{}/version-group/{}/".format(
+                TEST_HOST, API_V2, trainer.version_group.pk
+            ),
+        )
+
+        self.assertEqual(response.data["gym_leader"], trainer.gym_leader)
+
+        self.assertEqual(response.data["reward"]["name"], trainer.reward.name)
+        self.assertEqual(
+            response.data["reward"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, trainer.reward.pk),
+        )
+
+        self.assertEqual(len(response.data["team"]), 4)
+
+        # Test team member without ability or held item
+        self.assertEqual(response.data["team"][0]["pokemon"]["name"], base_pokemon.name)
+        self.assertEqual(
+            response.data["team"][0]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, base_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][0]["level"], base_team_member.level)
+
+        self.assertEqual(len(response.data["team"][0]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][0]["moves"][0]["name"],
+            base_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][0]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, base_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][0]["ability"], base_team_member.ability)
+
+        self.assertEqual(
+            response.data["team"][0]["held_item"], base_team_member.held_item
+        )
+
+        # Test team member with only ability
+        self.assertEqual(
+            response.data["team"][1]["pokemon"]["name"], ability_pokemon.name
+        )
+        self.assertEqual(
+            response.data["team"][1]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, ability_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][1]["level"], ability_team_member.level)
+
+        self.assertEqual(len(response.data["team"][1]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][1]["moves"][0]["name"],
+            ability_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][1]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, ability_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][1]["ability"]["name"], only_ability.name)
+        self.assertEqual(
+            response.data["team"][1]["ability"]["url"],
+            "{}{}/ability/{}/".format(TEST_HOST, API_V2, only_ability.pk),
+        )
+
+        self.assertEqual(
+            response.data["team"][1]["held_item"], ability_team_member.held_item
+        )
+
+        # Test team member with only held item
+        self.assertEqual(response.data["team"][2]["pokemon"]["name"], item_pokemon.name)
+        self.assertEqual(
+            response.data["team"][2]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, item_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][2]["level"], item_team_member.level)
+
+        self.assertEqual(len(response.data["team"][2]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][2]["moves"][0]["name"],
+            item_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][2]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, item_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][2]["ability"], item_team_member.ability)
+
+        self.assertEqual(response.data["team"][2]["held_item"]["name"], only_item.name)
+        self.assertEqual(
+            response.data["team"][2]["held_item"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, only_item.pk),
+        )
+
+        # Test team member with both ability and held item
+        self.assertEqual(response.data["team"][3]["pokemon"]["name"], both_pokemon.name)
+        self.assertEqual(
+            response.data["team"][3]["pokemon"]["url"],
+            "{}{}/pokemon/{}/".format(TEST_HOST, API_V2, both_pokemon.pk),
+        )
+
+        self.assertEqual(response.data["team"][3]["level"], both_team_member.level)
+
+        self.assertEqual(len(response.data["team"][3]["moves"]), 1)
+        self.assertEqual(
+            response.data["team"][3]["moves"][0]["name"],
+            both_team_member_move.move.name,
+        )
+        self.assertEqual(
+            response.data["team"][3]["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, both_team_member_move.move.pk),
+        )
+
+        self.assertEqual(response.data["team"][3]["ability"]["name"], both_ability.name)
+        self.assertEqual(
+            response.data["team"][3]["ability"]["url"],
+            "{}{}/ability/{}/".format(TEST_HOST, API_V2, both_ability.pk),
+        )
+
+        self.assertEqual(response.data["team"][3]["held_item"]["name"], both_item.name)
+        self.assertEqual(
+            response.data["team"][3]["held_item"]["url"],
+            "{}{}/item/{}/".format(TEST_HOST, API_V2, both_item.pk),
+        )
