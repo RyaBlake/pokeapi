@@ -2211,6 +2211,38 @@ class MoveEffectChangeSerializer(serializers.ModelSerializer):
         model = MoveEffectChange
         fields = ("version_group", "effect_entries")
 
+class MoveEffectSerializer(serializers.ModelSerializer):
+    effect = serializers.SerializerMethodField()
+    
+    class Meta:
+        model = MoveEffect
+        fields = (
+            "id",
+            # "short_effect",
+            "effect",
+            # "language",
+            # "effect_changes",
+        )
+    
+    def _get_effect_text(self, obj):
+        effect_texts = MoveEffectEffectText.objects.filter(move_effect=obj)
+        return MoveEffectEffectTextSerializer(
+            effect_texts, many=True, context=self.context
+        ).data
+    
+    def get_effect(self, obj):
+        data = self._get_effect_text(obj)
+
+        if len(data) > 0:
+            for key, value in data[0].items():
+                if "$effect_chance%" in value:
+                    data[0][key] = value.replace(
+                        "$effect_chance%", "[effect_chance]"
+                    )
+            return data[0]['effect']
+        else:
+            return None
+
 
 class MoveFlavorTextSerializer(serializers.ModelSerializer):
     flavor_text = serializers.CharField()

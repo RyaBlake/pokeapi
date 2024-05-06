@@ -237,6 +237,11 @@ class MoveDamageClassResource(PokeapiCommonViewset):
     list_serializer_class = MoveDamageClassSummarySerializer
 
 
+class MoveEffectResource(PokeapiCommonViewset):
+    queryset = MoveEffect.objects.all()
+    serializer_class = MoveEffectSerializer
+
+
 class MoveMetaAilmentResource(PokeapiCommonViewset):
     queryset = MoveMetaAilment.objects.all()
     serializer_class = MoveMetaAilmentDetailSerializer
