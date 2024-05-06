@@ -2215,6 +2215,7 @@ class MoveEffectChangeSerializer(serializers.ModelSerializer):
 class MoveEffectSerializer(serializers.ModelSerializer):
     short_effect = serializers.SerializerMethodField()
     effect = serializers.SerializerMethodField()
+    language = serializers.SerializerMethodField()
     
     class Meta:
         model = MoveEffect
@@ -2222,7 +2223,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
             "id",
             "short_effect",
             "effect",
-            # "language",
+            "language",
             # "effect_changes",
         )
     
@@ -2255,6 +2256,14 @@ class MoveEffectSerializer(serializers.ModelSerializer):
                         "$effect_chance%", "[effect_chance]"
                     )
             return data[0]['short_effect']
+        else:
+            return None
+    
+    def get_language(self, obj):
+        data = self._get_effect_text(obj)
+
+        if len(data) > 0:
+            return data[0]['language']
         else:
             return None
 
