@@ -201,9 +201,25 @@ class MoveTargetSummarySerializer(serializers.HyperlinkedModelSerializer):
 
 
 class MoveSummarySerializer(serializers.HyperlinkedModelSerializer):
+    effect_chance = serializers.SerializerMethodField(required=False)
+
     class Meta:
         model = Move
-        fields = ("name", "url")
+        fields = ("name", "effect_chance", "url")
+    
+    def get_effect_chance(self, obj):
+        if 'effect_chance_enabled' in self.context and self.context['effect_chance_enabled']:
+            return obj.move_effect_chance
+        else:
+            return None
+    
+    def to_representation(self, instance):
+        rep = super().to_representation(instance)
+
+        if rep['effect_chance'] is None:
+            rep.pop('effect_chance')
+        
+        return rep
 
 
 class MoveLearnMethodSummarySerializer(serializers.HyperlinkedModelSerializer):
@@ -2217,6 +2233,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
     effect = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
     changes = serializers.SerializerMethodField()
+    moves = serializers.SerializerMethodField()
     
     class Meta:
         model = MoveEffect
@@ -2226,6 +2243,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
             "effect",
             "language",
             "changes",
+            "moves"
         )
     
     def _get_effect_text(self, obj):
@@ -2241,7 +2259,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
             for key, value in data[0].items():
                 if "$effect_chance%" in value:
                     data[0][key] = value.replace(
-                        "$effect_chance%", "[effect_chance]"
+                        "$effect_chance", "[effect_chance]"
                     )
             return data[0]['effect']
         else:
@@ -2254,7 +2272,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
             for key, value in data[0].items():
                 if "$effect_chance%" in value:
                     data[0][key] = value.replace(
-                        "$effect_chance%", "[effect_chance]"
+                        "$effect_chance", "[effect_chance]"
                     )
             return data[0]['short_effect']
         else:
@@ -2275,6 +2293,12 @@ class MoveEffectSerializer(serializers.ModelSerializer):
         ).data
 
         return data
+
+    def get_moves(self, obj):
+        moves = Move.objects.filter(move_effect=obj)
+        context = self.context.copy()
+        context['effect_chance_enabled'] = True
+        return MoveSummarySerializer(moves, many=True, context=context).data
 
 
 class MoveFlavorTextSerializer(serializers.ModelSerializer):
