@@ -2216,6 +2216,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
     short_effect = serializers.SerializerMethodField()
     effect = serializers.SerializerMethodField()
     language = serializers.SerializerMethodField()
+    changes = serializers.SerializerMethodField()
     
     class Meta:
         model = MoveEffect
@@ -2224,7 +2225,7 @@ class MoveEffectSerializer(serializers.ModelSerializer):
             "short_effect",
             "effect",
             "language",
-            # "effect_changes",
+            "changes",
         )
     
     def _get_effect_text(self, obj):
@@ -2266,6 +2267,14 @@ class MoveEffectSerializer(serializers.ModelSerializer):
             return data[0]['language']
         else:
             return None
+    
+    def get_changes(self, obj):
+        effect_changes = MoveEffectChange.objects.filter(move_effect=obj)
+        data = MoveEffectChangeSerializer(
+            effect_changes, many=True, context=self.context
+        ).data
+
+        return data
 
 
 class MoveFlavorTextSerializer(serializers.ModelSerializer):
