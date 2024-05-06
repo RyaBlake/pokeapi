@@ -17,9 +17,13 @@ import os.path
 import re
 import json
 from typing import Any, Callable, Generator
+
+from django.contrib.sites import requests
 from django.db import connection
 from pokemon_v2.models import *
 from pokemon_v2.models import MachineVersionLocation
+
+from pokeapi.pokemon_v2.models import Type, PokemonTypeEffectiveness
 
 # why this way? how about use `__file__`
 DATA_LOCATION = "data/v2/csv/"
@@ -104,7 +108,6 @@ def clear_table(model):
             + "'"
             + ",'id'), 1, false);"
         )
-
 
 def build_generic(model_classes, file_name, csv_record_to_objects):
     batches = {}
@@ -445,7 +448,6 @@ def _build_growth_rates():
     build_generic(
         (GrowthRateDescription,), "growth_rate_prose.csv", csv_record_to_objects
     )
-
 
 # ###########
 # #  ITEMS  #
@@ -2356,6 +2358,21 @@ def _build_pal_parks():
 
     build_generic((PalPark,), "pal_park.csv", csv_record_to_objects)
 
+def load_type_effectiveness():
+    with open(os.path.join(DATA_LOCATION, "type_effectiveness.csv"), "rt", encoding="utf8") as csvfile:
+        reader = csv.DictReader(csvfile)
+        for row in reader:
+            attacking_type = Type.objects.get(name=row['attacking_type'])
+            defending_type = Type.objects.get(name=row['defending_type'])
+            effectiveness = float(row['effectiveness'])
+            PokemonTypeEffectiveness.objects.create(attacking_type=attacking_type, defending_type=defending_type, effectiveness=effectiveness)
+
+def build_all():
+    load_type_effectiveness()
+
+
+if __name__ == "__main__":
+    build_all()
 
 def build_all():
     _build_languages()

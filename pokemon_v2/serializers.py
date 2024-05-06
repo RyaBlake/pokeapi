@@ -2,6 +2,8 @@ from collections import OrderedDict
 from django.urls import reverse
 from rest_framework import serializers
 
+
+
 # pylint: disable=redefined-builtin
 
 # PokeAPI v2 serializers in order of dependency
@@ -96,7 +98,6 @@ class EvolutionChainSummarySerializer(serializers.HyperlinkedModelSerializer):
         model = EvolutionChain
         fields = ("url",)
 
-
 class GenerationSummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Generation
@@ -107,7 +108,6 @@ class GenderSummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Gender
         fields = ("name", "url")
-
 
 class GrowthRateSummarySerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
@@ -3576,3 +3576,11 @@ class VersionGroupDetailSerializer(serializers.ModelSerializer):
             results.append(dex_group["pokedex"])
 
         return results
+
+    class PokemonSerializer(serializers.HyperlinkedModelSerializer):
+        strengths = serializers.ListField(child=serializers.CharField(), source='get_strengths')
+        weaknesses = serializers.ListField(child=serializers.CharField(), source='get_weaknesses')
+
+        class Meta:
+            model = Pokemon
+            fields = ('name', 'strengths', 'weaknesses', 'url')

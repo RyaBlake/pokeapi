@@ -3,6 +3,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from pokemon_v2.models import *
 
+from pokeapi.pokemon_v2.models import Ability, Gender
+from pokeapi.pokemon_v2.serializers import AbilitySummarySerializer, GenderSummarySerializer
+
 # pylint: disable=redefined-builtin
 
 TEST_HOST = "http://testserver"
@@ -1668,6 +1671,7 @@ class APIData:
 
         return pokemon_stat
 
+
     @classmethod
     def setup_pokemon_type_data(cls, pokemon, type=None, slot=1):
         type = type or cls.setup_type_data(name="tp for pkmn")
@@ -1687,6 +1691,9 @@ class APIData:
         pokemon_type_past.save()
 
         return pokemon_type_past
+
+
+
 
     @classmethod
     def setup_pokemon_item_data(cls, pokemon=None, item=None, version=None, rarity=50):
