@@ -63,7 +63,9 @@ router.register(r"type", TypeResource)
 router.register(r"version", VersionResource)
 router.register(r"version-group", VersionGroupResource)
 router.register(r"honey-trees", HoneyTreeResource)
-
+router.register(
+    r"Trophy_Garden_Special_Encounters", TrophyGardenSpecialEncounterResource
+)
 
 ###########################
 #

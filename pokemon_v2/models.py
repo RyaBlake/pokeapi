@@ -1185,6 +1185,12 @@ class HoneyTrees(HasPokemon):
     rarity = models.CharField(max_length=30)
 
 
+class TrophyGardenSpecialEncounters(HasPokemon):
+    min_level = models.IntegerField()
+
+    max_level = models.IntegerField()
+
+
 #################
 #  MOVE MODELS  #
 #################
