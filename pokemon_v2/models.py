@@ -1424,8 +1424,6 @@ class Machine(HasGrowthRate, HasItem):
         Location, through="MachineVersionLocation", blank=True
     )
 
-    # location_areas = models.ManyToManyField(LocationArea, through='MachineVersionLocations', blank=True)
-
     class Meta:
         unique_together = ("machine_number", "version_group")
 
