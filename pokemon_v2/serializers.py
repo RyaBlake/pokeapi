@@ -2239,8 +2239,8 @@ class MoveEffectSerializer(serializers.ModelSerializer):
         model = MoveEffect
         fields = (
             "id",
-            "short_effect",
             "effect",
+            "short_effect",
             "language",
             "changes",
             "moves"
