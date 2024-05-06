@@ -3635,31 +3635,3 @@ class VersionGroupDetailSerializer(serializers.ModelSerializer):
             results.append(dex_group["pokedex"])
 
         return results
-
-
-##################################################
-# NEW SERIALIZERS THAT COMP490 CAPSTONE HAS DONE #
-##################################################
-
-
-class MachineVersionLocationSerializer(serializers.HyperlinkedModelSerializer):
-    machine = MachineDetailSerializer()
-    item_id = ItemSummarySerializer()
-    version_group_id = VersionGroupSummarySerializer()
-    location_id = LocationSummarySerializer(
-        many=True, read_only=True, source="location"
-    )
-    locationarea_id = LocationAreaNameSerializer(
-        many=True, read_only=True, source="locationareaname"
-    )
-
-    class Meta:
-        model = MachineVersionLocation
-        fields = (
-            "machine",
-            "item_id",
-            "version_group_id",
-            "location_id",
-            "locationarea_id",
-            "movename",
-        )
