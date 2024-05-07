@@ -4299,7 +4299,9 @@ class APITests(APIData, APITestCase):
         self.assertEqual(response.data["id"], move_effect.pk)
         self.assertEqual(response.data["effect"], effect_text_serialized)
         self.assertEqual(response.data["short_effect"], short_effect_text_serialized)
+
         self.assertEqual(response.data["language"]["name"], move_effect_effect_text.language.name)
+        self.assertEqual(response.data["language"]["url"], "{}{}/language/{}/".format(TEST_HOST, API_V2, move_effect_effect_text.language.pk))
 	
     # Stat Tests
     def test_stat_api(self):
