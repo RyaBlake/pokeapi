@@ -4284,6 +4284,81 @@ class APITests(APIData, APITestCase):
         # pokemon
         self.assertEqual(response.data["learned_by_pokemon"][0]["name"], pokemon.name)
 
+    def test_move_effect_api(self):
+        move_effect = self.setup_move_effect_data()
+
+        effect_text = "mv efct efct txt with $effect_chance%"
+        effect_text_serialized = "mv efct efct txt with [effect_chance]%"
+        short_effect_text = "mv efct shrt efct txt with $effect_chance%"
+        short_effect_text_serialized = "mv efct shrt efct txt with [effect_chance]%"
+        move_effect_effect_text = self.setup_move_effect_effect_text_data(
+            move_effect, effect_text, short_effect_text
+        )
+
+        move = self.setup_move_data(name="base mv", move_effect=move_effect)
+
+        move_effect_change = self.setup_move_effect_change_data(move_effect)
+        move_effect_change_effect_text = self.setup_move_effect_change_effect_text_data(
+            move_effect_change=move_effect_change, effect="efct tx for mv efct chng"
+        )
+
+        response = self.client.get("{}/move-effect/{}/".format(API_V2, move_effect.pk))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+
+        self.assertEqual(response.data["id"], move_effect.pk)
+        self.assertEqual(response.data["effect"], effect_text_serialized)
+        self.assertEqual(response.data["short_effect"], short_effect_text_serialized)
+
+        self.assertEqual(
+            response.data["language"]["name"], move_effect_effect_text.language.name
+        )
+        self.assertEqual(
+            response.data["language"]["url"],
+            "{}{}/language/{}/".format(
+                TEST_HOST, API_V2, move_effect_effect_text.language.pk
+            ),
+        )
+
+        self.assertEqual(len(response.data["changes"]), 1)
+
+        self.assertEqual(
+            response.data["changes"][0]["version_group"]["name"],
+            move_effect_change.version_group.name,
+        )
+        self.assertEqual(
+            response.data["changes"][0]["version_group"]["url"],
+            "{}{}/version-group/{}/".format(
+                TEST_HOST, API_V2, move_effect_change.version_group.pk
+            ),
+        )
+
+        self.assertEqual(len(response.data["changes"][0]["effect_entries"]), 1)
+
+        self.assertEqual(
+            response.data["changes"][0]["effect_entries"][0]["effect"],
+            move_effect_change_effect_text.effect,
+        )
+        self.assertEqual(
+            response.data["changes"][0]["effect_entries"][0]["language"]["name"],
+            move_effect_change_effect_text.language.name,
+        )
+        self.assertEqual(
+            response.data["changes"][0]["effect_entries"][0]["language"]["url"],
+            "{}{}/language/{}/".format(
+                TEST_HOST, API_V2, move_effect_change_effect_text.language.pk
+            ),
+        )
+
+        self.assertEqual(len(response.data["moves"]), 1)
+        self.assertEqual(response.data["moves"][0]["name"], move.name)
+        self.assertEqual(
+            response.data["moves"][0]["effect_chance"], move.move_effect_chance
+        )
+        self.assertEqual(
+            response.data["moves"][0]["url"],
+            "{}{}/move/{}/".format(TEST_HOST, API_V2, move.pk),
+        )
+
     # Stat Tests
     def test_stat_api(self):
         stat = self.setup_stat_data(name="base stt")
