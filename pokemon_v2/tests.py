@@ -4302,6 +4302,17 @@ class APITests(APIData, APITestCase):
 
         self.assertEqual(response.data["language"]["name"], move_effect_effect_text.language.name)
         self.assertEqual(response.data["language"]["url"], "{}{}/language/{}/".format(TEST_HOST, API_V2, move_effect_effect_text.language.pk))
+
+        self.assertEqual(len(response.data["changes"]), 1)
+
+        self.assertEqual(response.data["changes"][0]["version_group"]["name"], move_effect_change.version_group.name)
+        self.assertEqual(response.data["changes"][0]["version_group"]["url"], "{}{}/version-group/{}/".format(TEST_HOST, API_V2, move_effect_change.version_group.pk))
+
+        self.assertEqual(len(response.data["changes"][0]["effect_entries"]), 1)
+
+        self.assertEqual(response.data["changes"][0]["effect_entries"][0]["effect"], move_effect_change_effect_text.effect)
+        self.assertEqual(response.data["changes"][0]["effect_entries"][0]["language"]["name"], move_effect_change_effect_text.language.name)
+        self.assertEqual(response.data["changes"][0]["effect_entries"][0]["language"]["url"], "{}{}/language/{}/".format(TEST_HOST, API_V2, move_effect_change_effect_text.language.pk))
 	
     # Stat Tests
     def test_stat_api(self):
