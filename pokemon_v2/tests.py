@@ -4279,21 +4279,27 @@ class APITests(APIData, APITestCase):
 
     def test_move_effect_api(self):
         move_effect = self.setup_move_effect_data()
-        move_effect_effect_text = self.setup_move_effect_effect_text_data(move_effect)
-        move_effect_effect = move_effect_effect_text.effect
-        move_effect_short_effect = move_effect_effect_text.short_effect
+
+        effect_text = "mv efct efct txt with $effect_chance%"
+        effect_text_serialized = "mv efct efct txt with [effect_chance]%"
+        short_effect_text = "mv efct shrt efct txt with $effect_chance%"
+        short_effect_text_serialized = "mv efct shrt efct txt with [effect_chance]%"
+        move_effect_effect_text = self.setup_move_effect_effect_text_data(move_effect, effect_text, short_effect_text)
+
         move = self.setup_move_data(name="base mv", move_effect=move_effect)
-        move_change = self.setup_move_change_data(move, power=10, pp=20, accuracy=30)
+
         move_effect_change = self.setup_move_effect_change_data(move_effect)
-        move_effect_change_effect_text = self.setup_move_effect_change_effect_text_data\
-            (move_effect_change=move_effect_change, effect="efct tx for my efct chng")
-        language = self.setup_language_data(name="lang for " + move_effect_effect)
-        language_name = language.name
+        move_effect_change_effect_text = self.setup_move_effect_change_effect_text_data(
+            move_effect_change=move_effect_change, effect="efct tx for mv efct chng"
+        )
+
         response = self.client.get("{}/move-effect/{}/".format(API_V2, move_effect.pk))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["effect"], move_effect_effect)
-        self.assertEqual(response.data["short_effect"], move_effect_short_effect)
-        self.assertEqual(response.data["language"]["name"], language_name)
+
+        self.assertEqual(response.data["id"], move_effect.pk)
+        self.assertEqual(response.data["effect"], effect_text_serialized)
+        self.assertEqual(response.data["short_effect"], short_effect_text_serialized)
+        self.assertEqual(response.data["language"]["name"], move_effect_effect_text.language.name)
 	
     # Stat Tests
     def test_stat_api(self):
