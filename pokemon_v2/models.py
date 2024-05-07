@@ -1185,6 +1185,12 @@ class HoneyTrees(HasPokemon):
     rarity = models.CharField(max_length=30)
 
 
+class TrophyGardenSpecialEncounters(HasPokemon):
+    min_level = models.IntegerField()
+
+    max_level = models.IntegerField()
+
+
 #################
 #  MOVE MODELS  #
 #################
@@ -1423,8 +1429,6 @@ class Machine(HasGrowthRate, HasItem):
     locations = models.ManyToManyField(
         Location, through="MachineVersionLocation", blank=True
     )
-
-    # location_areas = models.ManyToManyField(LocationArea, through='MachineVersionLocations', blank=True)
 
     class Meta:
         unique_together = ("machine_number", "version_group")
