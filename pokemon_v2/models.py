@@ -1829,14 +1829,7 @@ class PokemonCries(HasPokemon):
     cries = models.JSONField()
 
 
-class Type(models.Model):
-    name = models.CharField(max_length=50, unique=True)
-
-class Pokemon(models.Model):
-    name = models.CharField(max_length=100)
-    types = models.ManyToManyField(Type, through='PokemonTypeEffectiveness')
-
 class PokemonTypeEffectiveness(models.Model):
-    attacking_type = models.ForeignKey(Type, related_name='attack_type_effectiveness', on_delete=models.CASCADE)
-    defending_type = models.ForeignKey(Type, related_name='defense_type_effectiveness', on_delete=models.CASCADE)
+    attacking_type = models.ForeignKey(Type, on_delete=models.CASCADE)
+    defending_type = models.ForeignKey(Type, on_delete=models.CASCADE)
     effectiveness = models.FloatField()

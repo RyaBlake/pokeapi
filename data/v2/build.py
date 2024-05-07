@@ -2358,21 +2358,26 @@ def _build_pal_parks():
 
     build_generic((PalPark,), "pal_park.csv", csv_record_to_objects)
 
-def load_type_effectiveness():
-    with open(os.path.join(DATA_LOCATION, "type_effectiveness.csv"), "rt", encoding="utf8") as csvfile:
-        reader = csv.DictReader(csvfile)
-        for row in reader:
-            attacking_type = Type.objects.get(name=row['attacking_type'])
-            defending_type = Type.objects.get(name=row['defending_type'])
-            effectiveness = float(row['effectiveness'])
-            PokemonTypeEffectiveness.objects.create(attacking_type=attacking_type, defending_type=defending_type, effectiveness=effectiveness)
+
+def _load_type_effectiveness():
+    file_path = os.path.join(DATA_LOCATION, "type_effectiveness.csv")
+    with open(file_path, "rt", encoding="utf8") as csvfile:
+        with open(os.path.join(DATA_LOCATION, "type_effectiveness.csv"), "rt", encoding="utf8") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                attacking_type = Type.objects.get(name=row['attacking_type'])
+                defending_type = Type.objects.get(name=row['defending_type'])
+                effectiveness = float(row['effectiveness'])
+                PokemonTypeEffectiveness.objects.create(attacking_type=attacking_type, defending_type=defending_type,
+                                                        effectiveness=effectiveness)
 
 def build_all():
-    load_type_effectiveness()
-
+    _load_type_effectiveness()
+    # Add other build methods here if needed
 
 if __name__ == "__main__":
     build_all()
+
 
 def build_all():
     _build_languages()

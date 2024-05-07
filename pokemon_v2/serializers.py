@@ -3583,4 +3583,27 @@ class VersionGroupDetailSerializer(serializers.ModelSerializer):
 
         class Meta:
             model = Pokemon
-            fields = ('name', 'strengths', 'weaknesses', 'url')
+            fields = (
+                "id",
+                "name",
+                "base_experience",
+                "height",
+                "is_default",
+                "order",
+                "weight",
+                "abilities",
+                "past_abilities",
+                "forms",
+                "game_indices",
+                "held_items",
+                "location_area_encounters",
+                "moves",
+                "species",
+                "sprites",
+                "cries",
+                "stats",
+                "types",
+                "past_types",
+                "strengths",
+                "weaknesses",
+            )
