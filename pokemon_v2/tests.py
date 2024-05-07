@@ -4023,7 +4023,7 @@ class APITests(APIData, APITestCase):
         move_change = self.setup_move_change_data(move, power=10, pp=20, accuracy=30)
         move_effect_change = self.setup_move_effect_change_data(move_effect)
         move_effect_change_effect_text = self.setup_move_effect_change_effect_text_data(
-            move_effect_change=move_effect_change, effect="efct tx for mv efct  chng"
+            move_effect_change=move_effect_change, effect="efct tx for mv efct chng"
         )
         pokemon = self.setup_pokemon_data()
         version_group = self.setup_version_group_data()
